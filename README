@@ -1,3 +1,9 @@
 тестовый вариант рассылки уведомлений для сайта.
  - клиенты подключаются к демону по WebSocket
  - демон слушает Redis для получения уведомлений
+
+ - Listener
+  https://gist.github.com/jobliz/2596594
+
+ - WebServer
+  https://developer.mbed.org/cookbook/Websockets-Server
