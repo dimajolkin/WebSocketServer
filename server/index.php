@@ -1,5 +1,5 @@
 
-RUNd>
+<html>
     <title>WebSockets Hello World</title>
     <meta charset="utf-8" />
     <style type="text/css">
@@ -90,4 +90,4 @@ RUNd>
         
     </div>
   </body>
-</html> apt-get -u dist-upgrade
+</html>

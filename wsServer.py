@@ -1,4 +1,3 @@
-import redis
 import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
@@ -7,8 +6,8 @@ import socket
 import redis
 import threading
 
-class Listener(threading.Thread):
 
+class RedisListener(threading.Thread):
     def __init__(self, r, handler, channels):
         """
 
@@ -28,29 +27,25 @@ class Listener(threading.Thread):
 
     def run(self):
         for item in self.pubsub.listen():
-            message = item['data']
-            if item['data'] == "KILL":
-                self.close()
-                print self, "unsubscribed and finished"
-                break
-            else:
-                self.handler.write_message(item)
-                self.work(item)
+            self.handler.write_message(item['data'])
+            self.work(item)
+
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    app = None
+
     def open(self):
-        self.client = Listener(redis.Redis(), self, ["564"])
-        self.client.start()
+        self.app = RedisListener(redis.Redis(), self, ["564"])
+        self.app.start()
         print "new connection"
 
     def on_message(self, message):
-        print 'message received:  %s' % message
-        # Reverse Message and send it back
-        print 'sending back message: %s' % message[::-1]
-        self.write_message('Hello Word')
+        self.write_message(message)
 
     def on_close(self):
-        self.client.close()
+        if self.app is not None:
+            self.app.close()
+
         print 'connection closed'
 
     def check_origin(self, origin):
