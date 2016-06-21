@@ -121,6 +121,7 @@ if __name__ == "__main__":
     application = tornado.web.Application([
         (r"{0}".format(config['url']), WebSocketHandler),
     ])
+    redis.StrictRedis()
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8888)
     myIP = socket.gethostbyname(socket.gethostname())
