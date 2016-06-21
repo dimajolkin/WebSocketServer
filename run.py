@@ -73,12 +73,18 @@ class RedisListener(threading.Thread):
 
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
-    user_profile_id = None
-    token = None
+    storage = None
+
+    def __init__(self, application, request, **kwargs):
+        super(WebSocketHandler, self).__init__(application, request, **kwargs)
+        self.user_profile_id = None
+        self.token = None
+        if not self.storage:
+            raise Exception("WebSocketHandler empty storage")
 
     def open(self):
-        storage.attach_handler(self)
-        logging.debug("--> connection countHandlers:{0}".format(len(storage.handlers)))
+        self.storage.attach_handler(self)
+        logging.debug("--> connection countHandlers:{0}".format(len(self.storage.handlers)))
 
     def on_message(self, message):
         data = json.loads(message)
@@ -87,19 +93,17 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             self.user_profile_id = storage.pop('AUTH:{0}'.format(self.token))
             if self.user_profile_id:
                 logging.debug("user auth {0}".format(self.user_profile_id))
-                storage.set('STATUS:{0}'.format(self.user_profile_id), 1)
+                self.storage.set('STATUS:{0}'.format(self.user_profile_id), 1)
             else:
                 self.write_message({"type": "error", "code": 401, "content": "User not authorization!"})
 
     def on_close(self):
-        storage.detach_handler(self)
-        logging.debug(" --> close countHandlers:{0}".format(len(storage.handlers)))
+        self.storage.detach_handler(self)
+        logging.debug(" --> close countHandlers:{0}".format(len(self.storage.handlers)))
 
     def check_origin(self, origin):
         return True
 
-
-storage = None
 
 if __name__ == "__main__":
 
@@ -126,6 +130,10 @@ if __name__ == "__main__":
             db=redisConfig['db'])
         storage = RedisListener(redis, ["NOTIF:*"])
         storage.start()
+
+        # init static variable
+        WebSocketHandler.storage = storage
+
     except ConnectionError:
         logging.debug("Redis error connect: checked config.json")
         exit()
