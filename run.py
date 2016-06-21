@@ -134,5 +134,5 @@ if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8888)
     myIP = socket.gethostbyname(socket.gethostname())
-    logging.debug('*** Websocket Server Started at %s***' % myIP)
+    logging.debug('*** Websocket Server Started at {0}'.format(myIP))
     tornado.ioloop.IOLoop.instance().start()
