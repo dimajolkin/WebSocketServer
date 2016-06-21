@@ -138,12 +138,15 @@ if __name__ == "__main__":
         logging.debug("Redis error connect: checked config.json")
         exit()
 
-    application = tornado.web.Application([
-        (r"{0}".format(config['url']), WebSocketHandler),
-    ])
+    try:
+        application = tornado.web.Application([
+            (r"{0}".format(config['url']), WebSocketHandler),
+        ])
 
-    http_server = tornado.httpserver.HTTPServer(application)
-    http_server.listen(config['port'])
-    myIP = socket.gethostbyname(socket.gethostname())
-    logging.debug('*** Websocket Server Started at {0}'.format(myIP))
-    tornado.ioloop.IOLoop.instance().start()
+        http_server = tornado.httpserver.HTTPServer(application)
+        http_server.listen(config['port'])
+        myIP = socket.gethostbyname(socket.gethostname())
+        logging.debug('*** Websocket Server Started at {0}'.format(myIP))
+        tornado.ioloop.IOLoop.instance().start()
+    except Exception as ex:
+        logging.error(ex.message)
