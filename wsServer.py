@@ -1,4 +1,5 @@
 import json
+import os
 
 import tornado.httpserver
 import tornado.websocket
@@ -7,6 +8,9 @@ import tornado.web
 import socket
 import redis
 import threading
+
+from redis.exceptions import ConnectionError
+
 
 class RedisListener(threading.Thread):
     handlers = []
@@ -60,7 +64,6 @@ class RedisListener(threading.Thread):
 
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
-
     user_profile_id = None
     token = None
 
@@ -87,23 +90,33 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
+
 storage = None
 
 if __name__ == "__main__":
-    config = json.loads(file("./config.json").read())
+
+    config_file_path = "{0}/config.json".format(os.getcwd())
+    config = json.loads(file(config_file_path).read())
+
+    if not config:
+        print "Config not fount"
+        exit()
+
     if 'redis' not in config:
         print ("Redis config not found!!")
         exit()
 
     redisConfig = config['redis']
 
-    redis = redis.Redis(
-        host=redisConfig['host'],
-        port=redisConfig['port'],
-        db=redisConfig['db'])
-
-    storage = RedisListener(redis, ["NOTIF:*"])
-    storage.start()
+    try:
+        redis = redis.Redis(
+            host=redisConfig['host'],
+            port=redisConfig['port'],
+            db=redisConfig['db'])
+        storage = RedisListener(redis, ["NOTIF:*"])
+        storage.start()
+    except ConnectionError:
+        print "Redis error connect: checked config.json"
 
     application = tornado.web.Application([
         (r"{0}".format(config['url']), WebSocketHandler),
