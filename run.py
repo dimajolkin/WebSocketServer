@@ -53,7 +53,7 @@ class RedisListener(threading.Thread):
         self.pubsub.psubscribe(channels)
 
     def work(self, item):
-        logging.debug(item['channel'], ":", item['data'])
+        logging.debug(item['channel'] + ":" + item['data'])
 
     def close(self):
         self.pubsub.unsubscribe()
