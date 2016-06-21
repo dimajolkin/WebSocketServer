@@ -1,5 +1,8 @@
 {
   "url" : "/pythonDaemon",
+  "log" : {
+    "file" : "/var/log/pythonDaemon.log"
+  },
   "redis" : {
     "host" : "127.0.0.1",
     "port" : "6379",

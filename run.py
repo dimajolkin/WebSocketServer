@@ -1,6 +1,6 @@
 import json
 import os
-
+import logging
 import tornado.httpserver
 import tornado.websocket
 import tornado.ioloop
@@ -31,6 +31,12 @@ class RedisListener(threading.Thread):
     def get(self, key):
         return self.redis.get(key)
 
+    def pop(self, key):
+        value = self.redis.get(key)
+        if value:
+            self.redis.delete(key)
+        return value
+
     def set(self, key, value):
         self.redis.set(key, value)
 
@@ -47,7 +53,7 @@ class RedisListener(threading.Thread):
         self.pubsub.psubscribe(channels)
 
     def work(self, item):
-        print(item['channel'], ":", item['data'])
+        logging.debug(item['channel'], ":", item['data'])
 
     def close(self):
         self.pubsub.unsubscribe()
@@ -69,23 +75,22 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         storage.attach_handler(self)
-        print("new connection {0}".format(len(storage.handlers)))
+        logging.debug("--> connection countHandlers:{0}".format(len(storage.handlers)))
 
     def on_message(self, message):
         data = json.loads(message)
         if 'token' in data:
             self.token = data['token']
-            self.user_profile_id = storage.get('AUTH:{0}'.format(self.token))
+            self.user_profile_id = storage.pop('AUTH:{0}'.format(self.token))
             if self.user_profile_id:
+                logging.debug("user auth {0}".format(self.user_profile_id))
                 storage.set('STATUS:{0}'.format(self.user_profile_id), 1)
-
             else:
                 self.write_message({"type": "error", "code": 401, "content": "User not authorization!"})
-                return
 
     def on_close(self):
         storage.detach_handler(self)
-        print('connection closed')
+        logging.debug(" --> close countHandlers:{0}".format(len(storage.handlers)))
 
     def check_origin(self, origin):
         return True
@@ -99,12 +104,15 @@ if __name__ == "__main__":
     config = json.loads(file(config_file_path).read())
 
     if not config:
-        print "Config not fount"
+        logging.debug("Config not fount")
         exit()
 
     if 'redis' not in config:
-        print ("Redis config not found!!")
+        logging.debug("Redis config not found!!")
         exit()
+
+    if 'log' in config:
+        logging.basicConfig(filename=config['log']['file'], level=logging.DEBUG)
 
     redisConfig = config['redis']
 
@@ -116,7 +124,8 @@ if __name__ == "__main__":
         storage = RedisListener(redis, ["NOTIF:*"])
         storage.start()
     except ConnectionError:
-        print "Redis error connect: checked config.json"
+        logging.debug("Redis error connect: checked config.json")
+        exit()
 
     application = tornado.web.Application([
         (r"{0}".format(config['url']), WebSocketHandler),
@@ -125,5 +134,5 @@ if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8888)
     myIP = socket.gethostbyname(socket.gethostname())
-    print('*** Websocket Server Started at %s***' % myIP)
+    logging.debug('*** Websocket Server Started at %s***' % myIP)
     tornado.ioloop.IOLoop.instance().start()
