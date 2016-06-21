@@ -90,7 +90,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 storage = None
 
 if __name__ == "__main__":
-    config = json.loads(file("config.json").read())
+    config = json.loads(file("./config.json").read())
     if 'redis' not in config:
         print ("Redis config not found!!")
         exit()
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     storage.start()
 
     application = tornado.web.Application([
-        (config['url'], WebSocketHandler),
+        (r"{0}".format(config['url']), WebSocketHandler),
     ])
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8888)
