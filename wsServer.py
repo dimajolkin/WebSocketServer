@@ -8,7 +8,6 @@ import socket
 import redis
 import threading
 
-
 class RedisListener(threading.Thread):
     handlers = []
     redis = None
@@ -61,8 +60,6 @@ class RedisListener(threading.Thread):
 
 
 class WebSocketHandler(tornado.websocket.WebSocketHandler):
-    def __init__(self, application, request, **kwargs):
-        super(WebSocketHandler, self).__init__(application, request, **kwargs)
 
     user_profile_id = None
     token = None
@@ -90,15 +87,27 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
-
-application = tornado.web.Application([
-    (r'/pythonDaemon', WebSocketHandler),
-])
-
-storage = RedisListener(redis.Redis(db=2), ["NOTIF:*"])
-storage.start()
+storage = None
 
 if __name__ == "__main__":
+    config = json.loads(file("config.json").read())
+    if 'redis' not in config:
+        print ("Redis config not found!!")
+        exit()
+
+    redisConfig = config['redis']
+
+    redis = redis.Redis(
+        host=redisConfig['host'],
+        port=redisConfig['port'],
+        db=redisConfig['db'])
+
+    storage = RedisListener(redis, ["NOTIF:*"])
+    storage.start()
+
+    application = tornado.web.Application([
+        (config['url'], WebSocketHandler),
+    ])
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8888)
     myIP = socket.gethostbyname(socket.gethostname())

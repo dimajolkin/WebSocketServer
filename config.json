@@ -1,0 +1,8 @@
+{
+  "url" : "/pythonDaemon",
+  "redis" : {
+    "host" : "localhost",
+    "port" : "6432",
+    "db" : 2
+  }
+}
