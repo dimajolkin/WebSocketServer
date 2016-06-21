@@ -1,0 +1,10 @@
+daemon:
+    tty: true
+    build: ./
+    net: "host"
+    ports:
+        - "8888:8888"
+    volumes:
+        - /tmp:/tmp
+        - /var/log:/var/log
+
