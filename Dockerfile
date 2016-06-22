@@ -4,7 +4,8 @@ RUN pip install tornado==4.1
 RUN pip install redis
 RUN apt install -y git
 RUN git clone https://github.com/dimajolkin/WebSocketServer.git /root/daemon
-
+#RUN mkdir /root/daemon
+#COPY ./ /root/daemon
 VOLUME /var/log:/var/log
 EXPOSE 8888
 RUN touch /var/log/pythonDaemon.log
