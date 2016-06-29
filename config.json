@@ -1,6 +1,6 @@
 {
   "url" : "/pythonDaemon",
-  "port" : 8888,
+  "port" : 8047,
   "log" : {
     "file" : "/var/log/pythonDaemon.log"
   },
