@@ -105,6 +105,12 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         return True
 
 
+class IndexHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    def get(self):
+        self.render('web/index.html')
+
+
 if __name__ == "__main__":
 
     config_file_path = "{0}/config.json".format(os.getcwd())
@@ -141,6 +147,7 @@ if __name__ == "__main__":
     try:
         application = tornado.web.Application([
             (r"{0}".format(config['url']), WebSocketHandler),
+            (r'/', IndexHandler)
         ])
 
         http_server = tornado.httpserver.HTTPServer(application)
@@ -152,4 +159,3 @@ if __name__ == "__main__":
         logging.error(ex)
         tornado.ioloop.IOLoop.instance().stop()
         logging.error("Stop WebSocketServer")
-
