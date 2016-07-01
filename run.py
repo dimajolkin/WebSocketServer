@@ -156,6 +156,6 @@ if __name__ == "__main__":
         logging.debug('*** Websocket Server Started at {0}'.format(myIP))
         tornado.ioloop.IOLoop.instance().start()
     except Exception as ex:
-        logging.error(ex)
         tornado.ioloop.IOLoop.instance().stop()
+        logging.error(ex)
         logging.error("Stop WebSocketServer")
