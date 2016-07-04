@@ -94,8 +94,15 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
             if self.user_profile_id:
                 logging.debug("user auth {0}".format(self.user_profile_id))
                 self.storage.set('STATUS:{0}'.format(self.user_profile_id), 1)
+                self.write_message({"type": "ok", "content": "User authorization"})
             else:
                 self.write_message({"type": "error", "code": 401, "content": "User not authorization!"})
+
+        if 'type' in data and data['type'] == 'life':
+            if self.user_profile_id:
+                self.write_message({"type": "ok"})
+            else:
+                self.write_message({"type": "error"})
 
     def on_close(self):
         self.storage.detach_handler(self)
