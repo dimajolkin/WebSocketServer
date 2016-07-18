@@ -15,6 +15,7 @@ import tornado
 from server.UserCollection import UserCollection
 from server.Storage import Storage
 from server.handlers.UserHandler import UserHandler
+from server.listener.TaskListener import TaskListener
 from server.listener.NoticeListener import NoticeListener
 
 
@@ -59,6 +60,8 @@ class Server:
         ])
 
         NoticeListener(self.redis, ["notice:NOTIF:*"]).start()
+
+        TaskListener(self.redis, ["__key*__:*"]).start()
 
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(self.config['port'])
