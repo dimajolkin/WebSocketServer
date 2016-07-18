@@ -90,10 +90,10 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         data = json.loads(message)
         if 'token' in data:
             self.token = data['token']
-            self.user_profile_id = storage.pop('AUTH:{0}'.format(self.token))
+            self.user_profile_id = storage.pop('notice:AUTH:{0}'.format(self.token))
             if self.user_profile_id:
                 logging.debug("user auth {0}".format(self.user_profile_id))
-                self.storage.set('STATUS:{0}'.format(self.user_profile_id), 1)
+                self.storage.set('notice:STATUS:{0}'.format(self.user_profile_id), 1)
                 self.write_message({"type": "ok", "content": "User authorization"})
             else:
                 self.write_message({"type": "error", "code": 401, "content": "User not authorization!"})
@@ -115,7 +115,8 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
 class IndexHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def get(self):
-        self.render('web/index.html')
+        items = ["Item 1", "Item 2", "Item 3"]
+        self.render("web/index.html", title="My title", items=items)
 
 
 if __name__ == "__main__":
@@ -141,7 +142,7 @@ if __name__ == "__main__":
             host=redisConfig['host'],
             port=redisConfig['port'],
             db=redisConfig['db'])
-        storage = RedisListener(redis, ["NOTIF:*"])
+        storage = RedisListener(redis, ["notice:NOTIF:*"])
         storage.start()
 
         # init static variable

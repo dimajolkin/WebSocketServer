@@ -1,10 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Document</title>
+    <title>{{ title }} hello</title>
 </head>
 <body>
-<h1>Hello World</h1>
+<h>sdsd</h>
+<ul>
+    {% for item in items %}
+    <li>{{ escape(item) }}</li>
+    {% end %}
+</ul>
 </body>
 </html>
+
