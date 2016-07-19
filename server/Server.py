@@ -39,12 +39,12 @@ class Server:
         if 'log' in self.config:
             logging.basicConfig(filename=self.config['log']['file'], level=logging.DEBUG)
 
-        redis_config = self.config['redis']
+        self.redis_config = self.config['redis']
 
         self.redis = redis.Redis(
-            host=redis_config['host'],
-            port=redis_config['port'],
-            db=redis_config['db']
+            host=self.redis_config['host'],
+            port=self.redis_config['port'],
+            db=self.redis_config['db']
         )
 
         self.users = UserCollection()
@@ -61,7 +61,7 @@ class Server:
 
         NoticeListener(self.redis, ["notice:NOTIF:*"]).start()
 
-        TaskListener(self.redis, ["__key*__:*"]).start()
+        TaskListener(self.redis, ["__key*__:expired"]).start()
 
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(self.config['port'])

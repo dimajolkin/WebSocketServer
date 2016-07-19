@@ -24,17 +24,53 @@ class TaskListener(threading.Thread):
     def run(self):
         for item in self.pubsub.listen():
             try:
-                #notice:tasks:list:<number>
-                if item['channel'] == '__keyevent@2__:expired':
-                    number_task = item['data'].split(':')[-1]
-                    print "number task: {0}".format(number_task)
-                    for key in self.redis.keys('notice:tasks:job:{0}:*'.format(number_task)):
-                        user_key = key.split(':')[-1]
-                        print user_key
-                        print self.redis.get(key)
-                        pass
+                task = Task(item)
+                print "event" + str(item)
 
-                    print number_task
+                if task.is_task():
+                    pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key())
+                    keys = self.redis.keys(pattern)
+                    print "send msg: " + str(keys)
+                    for key in keys:
+                        user_key = key.split(':')[-1]
+                        print key
+                        notice = self.redis.get(key)
+                        print notice
+                        self.redis.publish('notice:NOTIF:{0}'.format(user_key), notice)
+
+                    # self.redis.delete(keys)
+                else:
+                    print "not task:"
+                    print item
 
             except Exception as ex:
                 print ex.message
+
+
+class Task:
+    KEY = 'notice:reminder:tasks:list:'
+
+    def __init__(self, data):
+        self.data = data
+
+    def is_task(self):
+        """
+        is task
+        :return:
+        """
+        return str(self.data['data']).find(self.KEY) == 0
+
+    def get_key(self):
+        """
+        get key <name>:<time>
+        :return:
+        """
+        return str(self.data['data']).replace(self.KEY, '')
+
+    def get_name(self):
+        """
+        get name task
+        :return:
+        """
+        return self.get_key().split(':')[-2]
+
