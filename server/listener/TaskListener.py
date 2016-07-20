@@ -68,7 +68,7 @@ class Task:
         get key <name>:<time>
         :return:
         """
-        return str(self.data['data']).replace(self.KEY, '')
+        return str(self.data['data']).replace(self.KEY, '').replace('\\', '\\\\')
 
     def get_name(self):
         """
