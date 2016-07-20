@@ -29,7 +29,7 @@ class TaskListener(threading.Thread):
                 logging.debug("event" + str(item))
 
                 if task.is_task():
-                    pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key())
+                    pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key()).replace('/', '//')
                     keys = self.redis.keys(pattern)
                     logging.debug("task key: " + str(task.get_key()))
                     logging.debug("send msg: " + str(keys))
