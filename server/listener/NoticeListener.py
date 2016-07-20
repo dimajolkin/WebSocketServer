@@ -27,15 +27,8 @@ class NoticeListener(threading.Thread):
         self.pubsub = redis.pubsub()
         self.pubsub.psubscribe(channels)
 
-    def work(self, item):
-        print "begin message:"
-        print item['channel']
-        print item['data']
-        print "end message"
-
     def run(self):
         for item in self.pubsub.listen():
-            self.work(item)
             try:
                 user_key = item['channel'].split(':')[2]
                 print "find users {0}".format(user_key)

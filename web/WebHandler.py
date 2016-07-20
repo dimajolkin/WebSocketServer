@@ -9,8 +9,11 @@ import socket
 import redis
 import threading
 
+
 class IndexHandler(tornado.web.RequestHandler):
+
     @tornado.web.asynchronous
     def get(self):
+
         items = ["Item 1", "Item 2", "Item 3"]
-        self.render("views/index.html", title="My title", items=items)
+        self.render("views/index.html", title="Daemon", items=items)
