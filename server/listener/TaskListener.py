@@ -26,13 +26,15 @@ class TaskListener(threading.Thread):
         for item in self.pubsub.listen():
             try:
                 task = Task(item)
-                logging.debug("event" + str(item))
-
                 if task.is_task():
-                    pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key()).replace('/', '//')
+                    pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key())
                     keys = self.redis.keys(pattern)
+
+                    logging.debug(" ---------------------- ")
+                    logging.debug("pattern : " + str(pattern))
                     logging.debug("task key: " + str(task.get_key()))
-                    logging.debug("send msg: " + str(keys))
+                    logging.debug("keys    : " + str(keys))
+                    logging.debug(" ---------------------- ")
                     for key in keys:
                         user_key = key.split(':')[-1]
                         logging.debug(key)
