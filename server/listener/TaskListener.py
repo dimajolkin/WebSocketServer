@@ -31,6 +31,7 @@ class TaskListener(threading.Thread):
                 if task.is_task():
                     pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key())
                     keys = self.redis.keys(pattern)
+                    logging.debug("task key: " + str(task.get_key()))
                     logging.debug("send msg: " + str(keys))
                     for key in keys:
                         user_key = key.split(':')[-1]
