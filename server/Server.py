@@ -66,7 +66,5 @@ class Server:
         http_server = tornado.httpserver.HTTPServer(application)
         http_server.listen(self.config['port'])
         myIP = socket.gethostbyname(socket.gethostname())
-        print '*** Websocket Server Started at {0}'.format(myIP)
-        print self.config
+        logging.debug('*** Websocket Server Started at {0}'.format(myIP))
         tornado.ioloop.IOLoop.instance().start()
-        pass

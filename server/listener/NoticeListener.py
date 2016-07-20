@@ -19,7 +19,7 @@ class NoticeListener(threading.Thread):
         """
 
         :type redis: redis.client.Redis
-        :type handler: WebSocketHandler
+        :type channels: WebSocketHandler
         """
         self.redis = redis
         threading.Thread.__init__(self)
@@ -31,9 +31,7 @@ class NoticeListener(threading.Thread):
         for item in self.pubsub.listen():
             try:
                 user_key = item['channel'].split(':')[2]
-                print "find users {0}".format(user_key)
                 self.get_users().send(user_key, item['data'])
 
             except Exception as ex:
                 print ex.message
-                pass
