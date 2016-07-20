@@ -1,5 +1,4 @@
 {
-  "pid" : "/tmp/python-notice-daemon.pid",
   "url" : "/pythonDaemon",
   "port" : 8047,
   "log" : {

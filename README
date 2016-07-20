@@ -11,3 +11,6 @@
 
  - WebServer
   https://developer.mbed.org/cookbook/Websockets-Server
+
+Console command:
+-- run.py start|stop|restart|status
