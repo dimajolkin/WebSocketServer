@@ -17,6 +17,7 @@ from server.Storage import Storage
 from server.handlers.UserHandler import UserHandler
 from server.listener.TaskListener import TaskListener
 from server.listener.NoticeListener import NoticeListener
+from web.WebHandler import IndexHandler
 
 
 class Server:
@@ -56,7 +57,7 @@ class Server:
 
         application = tornado.web.Application([
             (r"{0}".format(self.config['url']), UserHandler),
-            # (r'/', WebHandler)
+            (r'/', IndexHandler)
         ])
 
         NoticeListener(self.redis, ["notice:NOTIF:*"]).start()

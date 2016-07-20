@@ -1,3 +1,4 @@
+import logging
 import threading
 
 
@@ -25,17 +26,16 @@ class TaskListener(threading.Thread):
         for item in self.pubsub.listen():
             try:
                 task = Task(item)
-                print "event" + str(item)
+                logging.debug("event" + str(item))
 
                 if task.is_task():
                     pattern = 'notice:reminder:tasks:job:{0}:*'.format(task.get_key())
                     keys = self.redis.keys(pattern)
-                    print "send msg: " + str(keys)
+                    logging.debug("send msg: " + str(keys))
                     for key in keys:
                         user_key = key.split(':')[-1]
-                        print key
+                        logging.debug(key)
                         notice = self.redis.get(key)
-                        print notice
                         self.redis.publish('notice:NOTIF:{0}'.format(user_key), notice)
 
                     # self.redis.delete(keys)
