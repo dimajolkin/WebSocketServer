@@ -1,4 +1,5 @@
 {
+  "pid": "/var/run/pynotice-service.pid",
   "url" : "/pythonDaemon",
   "port" : 8047,
   "log" : {

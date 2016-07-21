@@ -17,11 +17,6 @@ class TaskListener(threading.Thread):
         self.pubsub = redis.pubsub()
         self.pubsub.psubscribe(channels)
 
-    def work(self, item):
-        print "event message:"
-        print item['data']
-        print "end message"
-
     def run(self):
         for item in self.pubsub.listen():
             try:
@@ -42,13 +37,9 @@ class TaskListener(threading.Thread):
                         self.redis.publish('notice:NOTIF:{0}'.format(user_key), notice)
 
                     # self.redis.delete(keys)
-                else:
-                    print "not task:"
-                    print item
 
             except Exception as ex:
-                print ex.message
-
+                logging.fatal(ex.message)
 
 class Task:
     KEY = 'notice:reminder:tasks:list:'

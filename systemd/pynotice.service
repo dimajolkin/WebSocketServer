@@ -1,0 +1,20 @@
+[Unit]
+Description=notice
+
+[Service]
+Type=forking
+PIDFile=/var/run/pynotice-service.pid
+WorkingDirectory=/home/dima/gitHub/WebSocketServer/
+
+User=root
+Group=root
+
+Environment=RACK_ENV=production
+
+OOMScoreAdjust=-1000
+
+ExecStart=/home/dima/gitHub/WebSocketServer/run.py start
+ExecStop=/home/dima/gitHub/WebSocketServer/run.py stop
+ExecReload=/home/dima/gitHub/WebSocketServer/run.py restart
+TimeoutSec=300
+

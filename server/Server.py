@@ -21,10 +21,15 @@ from web.WebHandler import IndexHandler
 
 
 class Server:
-    def __init__(self):
+    dir = os.getcwd()
 
-        config_file_path = "{0}/config.json".format(os.getcwd())
-        self.config = json.loads(file(config_file_path).read())
+    def __init__(self, config=None):
+
+        if not config:
+            config_file_path = "{0}/config.json".format(self.dir)
+            self.config = json.loads(file(config_file_path).read())
+        else:
+            self.config = config
 
         if not self.config:
             print "Config not fount"

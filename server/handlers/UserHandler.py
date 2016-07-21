@@ -30,7 +30,6 @@ class UserHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         data = json.loads(message)
-        print data
         if 'token' in data:
             self.token = data['token']
 

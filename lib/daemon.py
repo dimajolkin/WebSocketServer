@@ -25,6 +25,8 @@ import sys
 import time
 import signal
 
+import pwd
+
 
 class Daemon(object):
     """
@@ -33,7 +35,8 @@ class Daemon(object):
     """
     def __init__(self, pidfile, stdin=os.devnull,
                  stdout=os.devnull, stderr=os.devnull,
-                 home_dir='.', umask=022, verbose=1, use_gevent=False):
+                 home_dir='.', umask=022, verbose=1, use_gevent=False,
+                 user='nobody'):
         self.stdin = stdin
         self.stdout = stdout
         self.stderr = stderr
@@ -43,6 +46,12 @@ class Daemon(object):
         self.umask = umask
         self.daemon_alive = True
         self.use_gevent = use_gevent
+        self.user = user
+
+    def privileges(self):
+        pw = pwd.getpwnam(self.user)
+        os.setgid(pw.pw_gid)
+        os.setuid(pw.pw_uid)
 
     def daemonize(self):
         """
@@ -64,7 +73,6 @@ class Daemon(object):
         os.chdir(self.home_dir)
         os.setsid()
         os.umask(self.umask)
-
         # Do second fork
         try:
             pid = os.fork()
@@ -140,6 +148,7 @@ class Daemon(object):
 
         # Start the daemon
         self.daemonize()
+        self.privileges()
         self.run(*args, **kwargs)
 
     def stop(self):

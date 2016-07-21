@@ -1,5 +1,6 @@
 #!/usr/bin/python
-
+import json
+import os
 import sys
 
 from lib.daemon import Daemon
@@ -13,7 +14,16 @@ class ServerDaemon(Daemon):
 
 
 if __name__ == "__main__":
-    daemon = ServerDaemon('/tmp/python-notice-daemon.pid')
+
+    # load config file
+    config_file_path = "{0}/config.json".format(os.getcwd())
+    config = json.loads(file(config_file_path).read())
+    if not 'pid' in config:
+        print "pid: config not found"
+        sys.exit(2)
+
+    print config['pid']
+    daemon = ServerDaemon(config['pid'])
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             daemon.start()
