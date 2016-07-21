@@ -12,7 +12,6 @@ from server import Storage
 
 class UserHandler(tornado.websocket.WebSocketHandler):
     storage = None
-    logging = None
     user_key = None
 
     users_collection = None
@@ -26,7 +25,7 @@ class UserHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         self.users_collection.append(self)
-        # self.log("--> connection countHandlers:{0}".format(len(self.storage.handlers)))
+        self.log("--> connection countHandlers:{0}".format(self.users_collection.length()))
 
     def on_message(self, message):
         data = json.loads(message)
@@ -50,7 +49,7 @@ class UserHandler(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         self.users_collection.remove(self)
-        # self.log(" --> close countHandlers:{0}", [len(self.users_collection.length())])
+        self.log(" --> close countHandlers:{0}", [self.users_collection.length()])
 
     def check_origin(self, origin):
         return True
@@ -64,5 +63,4 @@ class UserHandler(tornado.websocket.WebSocketHandler):
         if params is None:
             params = []
 
-        # if self.log:
         print logging.debug(log.format(params))

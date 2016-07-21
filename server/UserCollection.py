@@ -2,7 +2,7 @@ import json
 from multiprocessing import synchronize
 
 from server.handlers.UserHandler import UserHandler
-
+import logging
 
 class UserCollection:
     def __init__(self):
@@ -28,9 +28,12 @@ class UserCollection:
         :param message:
         :return:
         """
+        logging.debug("send:")
         for handler in self.users:
+            logging.debug("send: --> {0}".format(handler.user_key))
             if isinstance(handler, UserHandler):
                 if handler.user_key == user_key:
+                    logging.debug("---> send for {0}".format(user_key))
                     handler.write_message({'id': json.loads(message)})
 
     def length(self):

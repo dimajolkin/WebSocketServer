@@ -36,7 +36,7 @@ class TaskListener(threading.Thread):
                         notice = self.redis.get(key)
                         self.redis.publish('notice:NOTIF:{0}'.format(user_key), notice)
 
-                    # self.redis.delete(keys)
+                    self.redis.delete(keys)
 
             except Exception as ex:
                 logging.fatal(ex.message)
